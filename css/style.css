@@ -1,0 +1,201 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+.mainDiv {
+    margin: 0 auto;
+    padding-top: 30px;
+    width: 830px;
+}
+.mainDiv .testForm {
+    border-bottom: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
+    color: slategray;
+    float: left;
+    font-family: tahoma;
+    font-size: 12px;
+    height: 240px;
+    margin: 0 30px 30px 0;
+    width: 170px;
+}
+.mainDiv .testForm .titleForm {
+    background-color: mediumaquamarine;
+    color: white;
+    font-family: tahoma;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0 0 5px -5px;
+    padding: 5px;
+    text-align: center;
+    width: 166px;
+}
+.mainDiv .testForm .button {
+    display: block;
+    margin-top: 7px;
+}
+
+/*// ------------------------------*/
+
+.mainDiv .dataTable {
+    
+}
+.mainDiv .dataTable .table img {
+    width: 39px;
+}
+.mainDiv .dataTable .table {
+    width: 100%;
+}
+.mainDiv .dataTable .table .mainTable {
+    width: 100%;
+}
+.mainDiv .dataTable .table .mainTable .token {
+    width: 800px;
+    word-wrap: break-word;
+}
+.mainDiv .dataTable .table .nestedTable tr td:nth-child(1) {
+    color: silver;
+    padding-right: 5px;
+    text-align: end;
+}
+.mainDiv .dataTable .table td {
+    font-size: 13px;
+    vertical-align: top;
+    border-bottom: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
+}
+.mainDiv .dataTable .table td table td {
+    border-bottom: 0 none;
+    border-right: 0 none;
+}
+.mainDiv .dataTable .table th {
+    background-color: skyblue;
+    color: white;
+    font-family: tahoma;
+    font-size: 12px;
+    text-align: center;
+}
+.mainDiv .dataTable .titleTable {
+    background-color: mediumaquamarine;
+    color: white;
+    font-family: tahoma;
+    font-size: 23px;
+    height: 37px;
+    padding-top: 5px;
+    text-align: center;
+    width: 828px;
+}
+.mainDiv .dataTable .table .messagesContainer {
+    font-family: tahoma;
+    font-size: 11px;
+    height: 200px;
+    overflow: auto;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info .block2 .view {
+    background-color: mediumseagreen;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info .block2 .hide {
+    background-color: tomato;
+}
+.mainDiv .dataTable .table .messagesContainer .msg {
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 5px;
+    padding-bottom: 0;
+    width: 250px;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info {
+    
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info .block1 {
+    float: left;
+    width: 70px;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info .block2 {
+    float: left;
+    margin-left: 2px;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info .key {
+    background-color: thistle;
+    color: white;
+    text-align: center;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .info .val {
+    color: grey;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .text {
+    color: mediumblue;
+    font-weight: bold;
+    margin: 5px 0;
+    height: 30px;
+    padding: 5px;
+    width: 150px;
+    word-wrap: break-word;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .curentUser {
+    background-color: #e5e5e5;
+    float: left;
+}
+.mainDiv .dataTable .table .messagesContainer .msg .oponentUser {
+    background-color: #e5e5e5;
+    float: right;
+}
+.clear {
+    clear: both;
+}
+.mainDiv .listUsers {
+    font-family: tahoma;
+    font-size: 12px;
+    padding: 11px;
+}
+.mainDiv .listUsers .titleListUsers {
+    font-family: tahoma;
+    font-size: 25px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: mediumaquamarine;
+}
+.mainDiv .listUsers a {
+    color: #CCCCCC;
+    text-decoration: none;
+}
+.mainDiv .listUsers a:hover {
+    color: #CCCCCC;
+    text-decoration: none;
+    font-weight: bold;
+}
+.mainDiv .listUsers a span {
+    color: tomato;
+    font-weight: bold;
+}
+.mainDiv .listUsers .userData {
+    margin: 3px 0 14px 2px;
+}
+.mainDiv .listUsers .userData .avatar {
+    float: left;
+    margin-right: 12px;
+}
+.mainDiv .listUsers .userData .userInfo {
+    float: left;
+}
+.mainDiv .listUsers .userData .userInfo .nestedTable tr td:nth-child(1) {
+    padding-right: 5px;
+    text-align: right;
+    color: #CCCCCC;
+}
+.mainDiv .requestBlock {
+    float: left;
+}
+.mainDiv .messagesBlock {
+    float: left;
+}
+.mainDiv .statistic {
+    border: 1px solid #e5e5e5;
+    height: 200px;
+    overflow: auto;
+    width: 412px;
+}
+.mainDiv .statistic .title {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+
+
