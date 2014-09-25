@@ -91,8 +91,8 @@ $(document).ready(function(){
             });
         };
 
-//        observe_request();
-        observe_message();
+        observe_request();
+//        observe_message();
     });
     
     $('#stopObserve').on('click', function(){

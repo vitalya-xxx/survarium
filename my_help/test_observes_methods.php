@@ -1,5 +1,5 @@
 <?php
-//http://domdot/my_help/test_observes_methods.php?id=12754&last_message_id=&room_id=126
+//http://survarium/my_help/test_observes_methods.php?id=12754&last_message_id=&room_id=126
 
 require("/../config.inc.php");
 require("HelpModel.php");

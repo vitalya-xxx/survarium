@@ -86,7 +86,7 @@ if (!empty($user_id)) {
     // LONG POLLING
     while (($lastCountMsg == $curentCountMsg) && ($lastCountReq == $curentCountReq)) {
         $counterIterations++;
-        if (($counterIterations < LONG_POLLING_ITERATIONS) || ($key != $_SESSION['user_key_request'])) {
+        if (($counterIterations < LONG_POLLING_ITERATIONS) && ($key == $_SESSION['user_key_request'])) {
             sleep(SLEEP);
             clearstatcache();
             

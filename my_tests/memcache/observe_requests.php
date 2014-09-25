@@ -3,6 +3,9 @@ require("/../../newConfig.inc.php");
 require("/../../helpers/MemcacheClass.php");
 require("/../../helpers/SQLDriverNew.php");
 
+$key = rand();
+$_SESSION['user_key_request'] = $key;
+
 set_time_limit(0);
 
 $user_id                = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
@@ -16,7 +19,7 @@ $keyFromCountMessages   = KEY_MESSAGE_COUNT.$user_id;
 
 function getCountFromMemcache($key){
     $result = MemcacheClass::model()->getValue($key);
-    return !empty($result) ? $result['count'] : false ;
+    return !empty($result['count']) ? $result['count'] : false ;
 }
 
 function sendJson($responce){
@@ -83,7 +86,7 @@ if (!empty($user_id)) {
     // LONG POLLING
     while (($lastCountMsg == $curentCountMsg) && ($lastCountReq == $curentCountReq)) {
         $counterIterations++;
-        if ($counterIterations < LONG_POLLING_ITERATIONS) {
+        if (($counterIterations < LONG_POLLING_ITERATIONS) && ($key == $_SESSION['user_key_request'])) {
             sleep(SLEEP);
             clearstatcache();
             
@@ -104,6 +107,8 @@ if (!empty($user_id)) {
             }
         }
         else {
+            echo json_encode($_SESSION);
+    exit();
             exit();
         }
     }

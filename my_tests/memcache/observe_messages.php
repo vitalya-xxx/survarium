@@ -8,6 +8,9 @@ $last_msg_id    = isset($_REQUEST['last_message_id']) ? $_REQUEST['last_message_
 $room_id        = isset($_REQUEST['room_id']) ? $_REQUEST['room_id'] : null;
 $result         = array();
 
+$key = rand();
+$_SESSION['user_key_message'] = $key;
+
 set_time_limit(0);
 
 function sendJson($responce){
@@ -31,8 +34,7 @@ function getLastMsgIdFromMemcache($user_id, $room_id, $last_msg_id = 0){
 
     $key    = $user_id.'_'.$room_id;
     $result = MemcacheClass::model()->getValue($key);
-
-    return !empty($result) ? $result['message_id'] : false ;
+    return (!empty($result['message_id'])) ? $result['message_id'] : false ;
 }
 
 function getLastMessageForRoom(){
@@ -77,12 +79,13 @@ function longPolling($last_msg_id){
     global $result;
     global $user_id;
     global $room_id;
+    global $key;
     $lastMsgId          = 0;
     $counterIterations  = 0;
 
     while ($lastMsgId <= $last_msg_id) {
         $counterIterations++;
-        if ($counterIterations < LONG_POLLING_ITERATIONS) {
+        if (($counterIterations < LONG_POLLING_ITERATIONS) && ($key == $_SESSION['user_key_message'])) {
             sleep(SLEEP);
             clearstatcache();
 

@@ -85,7 +85,7 @@ function longPolling($last_msg_id){
 
     while ($lastMsgId <= $last_msg_id) {
         $counterIterations++;
-        if (($counterIterations < LONG_POLLING_ITERATIONS) || ($key != $_SESSION['user_key_message'])) {
+        if (($counterIterations < LONG_POLLING_ITERATIONS) && ($key == $_SESSION['user_key_message'])) {
             sleep(SLEEP);
             clearstatcache();
 
