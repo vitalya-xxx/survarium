@@ -9,7 +9,7 @@ $room_id        = isset($_REQUEST['room_id']) ? $_REQUEST['room_id'] : null;
 $result         = array();
 
 $key = rand();
-$_SESSION['user_key'] = $key;
+$_SESSION['user_key_message'] = $key;
 
 set_time_limit(0);
 
@@ -86,7 +86,7 @@ function longPolling($last_msg_id){
 
     while ($lastMsgId <= $last_msg_id) {
         $counterIterations++;
-        if ($counterIterations < LONG_POLLING_ITERATIONS || ($key != $_SESSION['user_key'])) {
+        if (($counterIterations < LONG_POLLING_ITERATIONS) || ($key != $_SESSION['user_key_message'])) {
             sleep(SLEEP);
             clearstatcache();
 
