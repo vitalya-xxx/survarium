@@ -19,7 +19,7 @@ $keyFromCountMessages   = KEY_MESSAGE_COUNT.$user_id;
 
 function getCountFromMemcache($key){
     $result = MemcacheClass::model()->getValue($key);
-    return !empty($result) ? $result['count'] : false ;
+    return !empty($result['count']) ? $result['count'] : false ;
 }
 
 function sendJson($responce){

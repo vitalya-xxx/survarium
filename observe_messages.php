@@ -34,8 +34,7 @@ function getLastMsgIdFromMemcache($user_id, $room_id, $last_msg_id = 0){
 
     $key    = $user_id.'_'.$room_id;
     $result = MemcacheClass::model()->getValue($key);
-
-    return !empty($result) ? $result['message_id'] : false ;
+    return (!empty($result['message_id'])) ? $result['message_id'] : false ;
 }
 
 function getLastMessageForRoom(){

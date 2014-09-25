@@ -37,7 +37,7 @@ define('MEMCACHE_PORT', 11211);
 define('MEMCACHE_EXPIRE', 18000);
 define('KEY_REQUEST_COUNT', 'countReqFor_');
 define('KEY_MESSAGE_COUNT', 'countMsgFor_');
-define('MEMCACHE_STATE', 'off');
+define('MEMCACHE_STATE', 'on');
 
 define('TIME_USER_ACTIVITY', 600);
 /**
