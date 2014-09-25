@@ -9,8 +9,15 @@ function addFriends( $user,$friends ) {
 								VALUES ('".$friends."','".$user."')");		
 		
 }
-function inviteFriendsDelete( $user,$friends ) {
-	$sql = mysql_query("DELETE FROM invite WHERE user_id = '$friends' AND user_id_friend = '$user' ");
+function inviteFriendsDelete($user, $friends) {
+    $sql = "
+        DELETE 
+        FROM invite 
+        WHERE (user_id = ".$user." AND user_id_friend = ".$friends.")
+            OR (user_id = ".$friends." AND user_id_friend = ".$user.")
+    ";
+    
+	$result = mysql_query($sql);
 }
 
 function writeCountInMemcache($user_id){
@@ -32,6 +39,7 @@ if($_POST["id"]&&$_POST["user_id"]){
     if (!empty($id) && !empty($user_id)) {
         addFriends($id, $user_id);
         inviteFriendsDelete($id, $user_id);
+        
         if ('on' == MEMCACHE_STATE) {
             writeCountInMemcache($id);
         }
