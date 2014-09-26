@@ -55,7 +55,6 @@ function getCountFromDB($item, $user_id, $keyMemcache){
 
     $result = SQLDriverNew::model()->Select($sql);
     $count  = !empty($result[0]['count']) ? (int)$result[0]['count'] : 0;
-    SQLDriverNew::model()->close();
     
     if ('on' == MEMCACHE_STATE) {
         MemcacheClass::model()->setValue($keyMemcache, array('count' => $count));
@@ -66,7 +65,6 @@ function getCountFromDB($item, $user_id, $keyMemcache){
 // ТОЧКА ВХОДА
 if (!empty($user_id)) {
     $user_id = (int)SQLDriverNew::model()->prepareData($user_id);
-    SQLDriverNew::model()->close();
     
     if ('on' == MEMCACHE_STATE) {
         $curentCountMsg = getCountFromMemcache($keyFromCountMessages);

@@ -57,7 +57,6 @@ function getLastMessageForRoom(){
 
     $result = SQLDriverNew::model()->Select($sql);
     $key    = $user_id.'_'.$room_id;
-    SQLDriverNew::model()->close();
     
     $value = array(
         'message_id'        => (int)$result[0]['message_id'],
