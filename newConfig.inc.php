@@ -49,5 +49,14 @@ function sendError($errorCode){
     echo json_encode(array(
         'errorCode' => $errorCode,
     ));
+    die();
+}
+
+function writeInErroLog($params){
+    $date       = date('d.m.Y H:i:s');
+    $type       = $params['fail'] ? 'ERROR' : 'SUCCESS';
+    $mysql      = $params['mysqlError'] ? ' - MYSQL' : '';
+    $message    = $type.$mysql." / ".$date. " / method: ".$params['method']." / userId: ".$params['userId']." - [".$params['message']."] \n";
+    error_log($message, 3, "log/php_errors.log");
 }
 

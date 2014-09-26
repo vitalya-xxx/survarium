@@ -1,5 +1,14 @@
 <?php
 class SQLDriver {
+    
+    private $logParams = array(
+        'message'    => '', 
+        'method'     => 'class SQLDriver', 
+        'fail'       => true, 
+        'mysqlError' => true, 
+        'userId'     => 'undefined', 
+    );
+    
     /**
     * Select
     * @param $query
@@ -9,8 +18,11 @@ class SQLDriver {
     {
         $result = mysql_query($query);
 
-        if (!$result)
-            die(mysql_error());
+        if (!$result) {
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
+        }   
 
         $n = mysql_num_rows($result);
         $arr = array();
@@ -57,9 +69,12 @@ class SQLDriver {
         $query = "INSERT INTO $table ($columns_s) VALUES ($values_s)";
         $result = mysql_query($query);
 
-        if (!$result)
-            die(mysql_error());
-
+        if (!$result) {
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
+        }
+        
         return mysql_insert_id();
     }
 
@@ -94,7 +109,9 @@ class SQLDriver {
         $result = mysql_query($query);
 
         if (!$result) {
-            return false;
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
         }
         else {
             $rows = mysql_affected_rows();
@@ -113,8 +130,11 @@ class SQLDriver {
         $query = "DELETE FROM $table WHERE $where";
         $result = mysql_query($query);
 
-        if (!$result)
-            die(mysql_error());
+        if (!$result) {
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
+        }
 
         return mysql_affected_rows();
     }
@@ -152,7 +172,9 @@ class SQLDriver {
             return (!empty($count[0])) ? true : false;
         }
         else {
-            return false;
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
         }
     }
 }

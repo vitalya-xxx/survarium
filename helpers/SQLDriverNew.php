@@ -2,7 +2,15 @@
 
 class SQLDriverNew {
     private static $model;
-    public $db = false; 
+    public $db = false;
+    
+    private $logParams = array(
+        'message'    => '', 
+        'method'     => 'class SQLDriverNew', 
+        'fail'       => true, 
+        'mysqlError' => true, 
+        'userId'     => 'undefined', 
+    );
     
     public static function model(){
         if (self::$model == null)
@@ -30,8 +38,11 @@ class SQLDriverNew {
     {
         $result = mysql_query($query);
 
-        if (!$result)
-            die(mysql_error());
+        if (!$result) {
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
+        }
 
         $n = mysql_num_rows($result);
         $arr = array();
@@ -78,8 +89,11 @@ class SQLDriverNew {
         $query = "INSERT INTO $table ($columns_s) VALUES ($values_s)";
         $result = mysql_query($query);
 
-        if (!$result)
-            die(mysql_error());
+        if (!$result) {
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
+        }
 
         return mysql_insert_id();
     }
@@ -115,7 +129,9 @@ class SQLDriverNew {
         $result = mysql_query($query);
 
         if (!$result) {
-            return false;
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
         }
         else {
             $rows = mysql_affected_rows();
@@ -134,9 +150,12 @@ class SQLDriverNew {
         $query = "DELETE FROM $table WHERE $where";
         $result = mysql_query($query);
 
-        if (!$result)
-            die(mysql_error());
-
+        if (!$result) {
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
+        }
+        
         return mysql_affected_rows();
     }
 
@@ -173,7 +192,9 @@ class SQLDriverNew {
             return (!empty($count[0])) ? true : false;
         }
         else {
-            return false;
+            $this->logParams['message'] = mysql_error()." < ".$query." >";
+            writeInErroLog($this->logParams);
+            die();
         }
     }
 }

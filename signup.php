@@ -4,6 +4,14 @@ require("config.inc.php");
 $email  = isset($_POST['user_email']) ? $_POST['user_email'] : null;
 $sql    = new SQLDriver();
 
+$logParams = array(
+    'message'    => '', 
+    'method'     => 'signup', 
+    'fail'       => true, 
+    'mysqlError' => false, 
+    'userId'     => $email, 
+);
+
 /**
 Проверка корректности email
  * 
@@ -69,11 +77,15 @@ function generateNickname($email){
 if (!empty($email)) {
     // Валидация email
     if (!validateEmail($email)) {
+        $logParams['message'] = 'sendError(1)';
+        writeInErroLog($logParams);
         sendError(1);
     }
     else {
         // Проверка существования email
         if (!verificationEmail($email)) {
+            $logParams['message'] = 'sendError(2)';
+            writeInErroLog($logParams);
             sendError(2);
         }
         else {
@@ -103,14 +115,24 @@ if (!empty($email)) {
                 
                 if ($result) {
                     $response['id'] = (int)$result;
+                    
+                    $logParams['message']   = 'user add in DB / '.json_encode($response);
+                    $logParams['fail']      = false;
+                    $logParams['userId']    = $email.'/'.$response['id'];
+                    writeInErroLog($logParams);
+                    
                     echo json_encode($response);
                 }
                 else {
+                    $logParams['message'] = 'sendError(5)';
+                    writeInErroLog($logParams);
                     sendError(5);
                 }
             }
             else {
                 if (1 == $rowExists[0]['confirm']) {
+                    $logParams['message'] = 'sendError(3)';
+                    writeInErroLog($logParams);
                     sendError(3);
                 }
                 else {
@@ -119,6 +141,12 @@ if (!empty($email)) {
                         'user_password' => $rowExists[0]['user_password'],
                         'id'            => $rowExists[0]['user_id'],
                     );
+                    
+                    $logParams['message']   = 'record in the database but is not confirmed / '.json_encode($response);
+                    $logParams['fail']      = false;
+                    $logParams['userId']    = $email.'/'.$response['id'];
+                    writeInErroLog($logParams);
+                    
                     UpdateUserTime::model()->setStateOffOnLineAllUsers($sql, $response['id']);
                     echo json_encode($response);
                 }
@@ -127,6 +155,8 @@ if (!empty($email)) {
     }
 }
 else {
+    $logParams['message'] = 'sendError(6)';
+    writeInErroLog($logParams);
     sendError(6);
 }
 
