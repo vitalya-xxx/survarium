@@ -28,7 +28,7 @@ $sqlState_0 = "
             FROM invite AS i2, users AS u2
             WHERE (i2.user_id = ".$user_id." AND u2.user_id = i2.user_id_friend)
                 OR (i2.user_id_friend = ".$user_id." AND u2.user_id = i2.user_id)
-            )
+        )
 ";
 
 $sqlState_1 = "

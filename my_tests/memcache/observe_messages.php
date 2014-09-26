@@ -8,9 +8,7 @@ $last_msg_id    = isset($_REQUEST['last_message_id']) ? $_REQUEST['last_message_
 $room_id        = isset($_REQUEST['room_id']) ? $_REQUEST['room_id'] : null;
 $result         = array();
 
-$key = rand();
-$_SESSION['user_key_message'] = $key;
-
+session_write_close();
 set_time_limit(0);
 
 function sendJson($responce){
@@ -59,6 +57,7 @@ function getLastMessageForRoom(){
 
     $result = SQLDriverNew::model()->Select($sql);
     $key    = $user_id.'_'.$room_id;
+    SQLDriverNew::model()->close();
     
     $value = array(
         'message_id'        => (int)$result[0]['message_id'],
@@ -85,7 +84,8 @@ function longPolling($last_msg_id){
 
     while ($lastMsgId <= $last_msg_id) {
         $counterIterations++;
-        if (($counterIterations < LONG_POLLING_ITERATIONS) && ($key == $_SESSION['user_key_message'])) {
+
+        if ($counterIterations < LONG_POLLING_ITERATIONS) {
             sleep(SLEEP);
             clearstatcache();
 

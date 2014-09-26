@@ -4,10 +4,11 @@ require("/../../helpers/PushWoosh.php");
 require("/../../helpers/MemcacheClass.php");
 require("/../../helpers/SQLDriverNew.php");
 
-$user_id    = isset($_POST['id']) ? $_POST['id'] : null;
-$room_id    = isset($_POST['room_id']) ? $_POST['room_id'] : null;
-$message    = isset($_POST['message']) ? $_POST['message'] : array();
-$pw2        = new PushWoosh(APPLICATION_CODE, API_ACCESS);
+$user_id        = isset($_POST['id']) ? $_POST['id'] : null;
+$room_id        = isset($_POST['room_id']) ? $_POST['room_id'] : null;
+$message        = isset($_POST['message']) ? $_POST['message'] : array();
+$pw2            = new PushWoosh(APPLICATION_CODE, API_ACCESS);
+$sqlDriverNew   = new SQLDriverNew();
 
 /**
 Запись автора и id сообщения в файл для отслеживания
@@ -18,13 +19,15 @@ $pw2        = new PushWoosh(APPLICATION_CODE, API_ACCESS);
  * @return boolean /
  */
 function writeIdInMemcache($msg_id, $object){
+    global $sqlDriverNew;
+    
     $sql = "
         SELECT user_id, user_id_friend
         FROM rooms
         WHERE id = ".$object['room_id']."
     ";
     
-    $result         = SQLDriverNew::model()->Select($sql);
+    $result         = $sqlDriverNew->Select($sql);
     $recipientId    = ($object['message_author_id'] == $result[0]['user_id']) ? $result[0]['user_id_friend'] : $result[0]['user_id'];
     $key            = $recipientId.'_'.$object['room_id'];
     
@@ -54,7 +57,7 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
             'room_id'               => $room_id,
         );
 
-        $messageId = SQLDriverNew::model()->Insert('message', $object);
+        $messageId = $sqlDriverNew->Insert('message', $object);
 
         if ($messageId) {
             if ('on' == MEMCACHE_STATE) {
@@ -66,29 +69,29 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
                 'message_date'  => $date,
             ));
 
-//            $user_id = SQLDriverNew::model()->prepareData($user_id);
-//            $room_id = SQLDriverNew::model()->prepareData($room_id);
-//            
-//            $author     = SQLDriverNew::model()->Select("SELECT user_nickname FROM users WHERE user_id = ".$user_id);
-//            $authorName = $author[0]['user_nickname'];
-//
-//            $message['message_text'] = $authorName.': '.$message['message_text'];
-//
-//            $sql = "
-//                SELECT u.device_token 
-//                FROM users AS u
-//                    INNER JOIN rooms AS r
-//                        ON r.id = ".$room_id."
-//                        AND (r.user_id = u.user_id OR r.user_id_friend = u.user_id)
-//                WHERE u.user_id != ".$user_id."
-//            ";
-//
-//            $user               = SQLDriverNew::model()->Select($sql);
-//            $deviceTokensArr    = explode(",", $user[0]['device_token']);
-//            SQLDriverNew::model()->close();
-//
-//            if (!empty($deviceTokensArr)) {
-//                // Сделано в цикле потому, что при передаче токенов массивом отправлялось почемуто только на первый
+            $user_id = $sqlDriverNew->prepareData($user_id);
+            $room_id = $sqlDriverNew->prepareData($room_id);
+            
+            $author     = $sqlDriverNew->Select("SELECT user_nickname FROM users WHERE user_id = ".$user_id);
+            $authorName = $author[0]['user_nickname'];
+
+            $message['message_text'] = $authorName.': '.$message['message_text'];
+
+            $sql = "
+                SELECT u.device_token 
+                FROM users AS u
+                    INNER JOIN rooms AS r
+                        ON r.id = ".$room_id."
+                        AND (r.user_id = u.user_id OR r.user_id_friend = u.user_id)
+                WHERE u.user_id != ".$user_id."
+            ";
+
+            $user               = $sqlDriverNew->Select($sql);
+            $deviceTokensArr    = explode(",", $user[0]['device_token']);
+            $sqlDriverNew->close();
+
+            if (!empty($deviceTokensArr)) {
+                // Сделано в цикле потому, что при передаче токенов массивом отправлялось почемуто только на первый
 //                foreach ($deviceTokensArr as $token) {
 //                    $pushes = array(
 //                        array(
@@ -99,16 +102,16 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
 //
 //                    $response = $pw2->createMessage($pushes);
 //                }
-//                
-//                // Старый вариант
-////                $pushes = array(
-////                    array(
-////                        'content' => $message['message_text'],
-////                        'devices' => $deviceTokensArr,
-////                    ),
-////                );
-////                $response = $pw2->createMessage($pushes);
-//            }
+                
+                // Старый вариант
+                $pushes = array(
+                    array(
+                        'content' => $message['message_text'],
+                        'devices' => $deviceTokensArr,
+                    ),
+                );
+                $response = $pw2->createMessage($pushes);
+            }
         }
         else {
            sendError(5); 

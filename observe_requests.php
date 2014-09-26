@@ -3,9 +3,7 @@ require("newConfig.inc.php");
 require("helpers/MemcacheClass.php");
 require("helpers/SQLDriverNew.php");
 
-$key = rand();
-$_SESSION['user_key_request'] = $key;
-
+session_write_close(); 
 set_time_limit(0);
 
 $user_id                = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
@@ -57,6 +55,7 @@ function getCountFromDB($item, $user_id, $keyMemcache){
 
     $result = SQLDriverNew::model()->Select($sql);
     $count  = !empty($result[0]['count']) ? (int)$result[0]['count'] : 0;
+    SQLDriverNew::model()->close();
     
     if ('on' == MEMCACHE_STATE) {
         MemcacheClass::model()->setValue($keyMemcache, array('count' => $count));
@@ -67,6 +66,7 @@ function getCountFromDB($item, $user_id, $keyMemcache){
 // ТОЧКА ВХОДА
 if (!empty($user_id)) {
     $user_id = (int)SQLDriverNew::model()->prepareData($user_id);
+    SQLDriverNew::model()->close();
     
     if ('on' == MEMCACHE_STATE) {
         $curentCountMsg = getCountFromMemcache($keyFromCountMessages);
@@ -86,7 +86,8 @@ if (!empty($user_id)) {
     // LONG POLLING
     while (($lastCountMsg == $curentCountMsg) && ($lastCountReq == $curentCountReq)) {
         $counterIterations++;
-        if (($counterIterations < LONG_POLLING_ITERATIONS) && ($key == $_SESSION['user_key_request'])) {
+        
+        if ($counterIterations < LONG_POLLING_ITERATIONS) {
             sleep(SLEEP);
             clearstatcache();
             

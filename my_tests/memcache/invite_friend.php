@@ -4,9 +4,10 @@ require("/../../helpers/MemcacheClass.php");
 require("/../../helpers/SQLDriverNew.php");
 require("/../../helpers/PushWoosh.php");
 
-$id         = isset($_POST['id']) ? $_POST['id'] : null; 
-$user_id    = isset($_POST['user_id']) ? $_POST['user_id'] : null; 
-$pw         = new PushWoosh(APPLICATION_CODE, API_ACCESS);
+$id             = isset($_POST['id']) ? $_POST['id'] : null; 
+$user_id        = isset($_POST['user_id']) ? $_POST['user_id'] : null; 
+$pw             = new PushWoosh(APPLICATION_CODE, API_ACCESS);
+$sqlDriverNew   = new SQLDriverNew();
 
 function writeCountInMemcache($user_id){
     $countMemcache  = MemcacheClass::model()->getValue(KEY_REQUEST_COUNT.$user_id);
@@ -24,13 +25,15 @@ function writeCountInMemcache($user_id){
  * @return boolean /
  */
 function rowExists($user, $friends){
+    global $sqlDriverNew;
+    
     $sql = "
         SELECT COUNT(*) AS count
         FROM `invite`
         WHERE `user_id` = ".$user." AND `user_id_friend` = ".$friends."
     ";
 
-    $result = SQLDriverNew::model()->Select($sql);
+    $result = $sqlDriverNew->Select($sql);
 
     if ($result) {
         return (0 < $result[0]['count']) ? true : false;
@@ -48,8 +51,9 @@ function rowExists($user, $friends){
  */
 function sendPushInvite($userId, $friendId){
     global $pw;
+    global $sqlDriverNew;
 
-    $author     = SQLDriverNew::model()->Select("SELECT user_nickname FROM users WHERE user_id = ".$userId);
+    $author     = $sqlDriverNew->Select("SELECT user_nickname FROM users WHERE user_id = ".$userId);
     $authorName = $author[0]['user_nickname'];
     $message    = $authorName.': Invites you to be friends.';
     $sql        = "
@@ -58,30 +62,31 @@ function sendPushInvite($userId, $friendId){
         WHERE u.user_id = ".$friendId."
     ";
 
-    $user               = SQLDriverNew::model()->Select($sql);
-    $deviceTokensArr    = explode(",", $user[0]['device_token']);
+    $user = $sqlDriverNew->Select($sql);
+    $sqlDriverNew->close();
+    $deviceTokensArr = explode(",", $user[0]['device_token']);
 
     if (!empty($deviceTokensArr)) {
         // Сделано в цикле потому, что при передаче токенов массивом отправлялось почемуто только на первый
-        foreach ($deviceTokensArr as $token) {
-            $pushes = array(
-                array(
-                    'content' => $message,
-                    'devices' => $token,
-                ),
-            );
-
-            $response = $pw->createMessage($pushes);
-        }
-        
-//        $pushes = array(
-//            array(
-//                'content' => $message,
-//                'devices' => $deviceTokensArr,
-//            ),
-//        );
+//        foreach ($deviceTokensArr as $token) {
+//            $pushes = array(
+//                array(
+//                    'content' => $message,
+//                    'devices' => $token,
+//                ),
+//            );
 //
-//        $response = $pw->createMessage($pushes);
+//            $response = $pw->createMessage($pushes);
+//        }
+        
+        $pushes = array(
+            array(
+                'content' => $message,
+                'devices' => $deviceTokensArr,
+            ),
+        );
+
+        $response = $pw->createMessage($pushes);
         // можно добавить обработчик - отправился push или нет
     }
 }
@@ -93,13 +98,15 @@ function sendPushInvite($userId, $friendId){
  * @param type $friends /
  */
 function inviteFriends($user, $friends) {
+    global $sqlDriverNew;
+    
     if (false == rowExists($user, $friends)) {
         $data = array(
            'user_id'        => $user,  
            'user_id_friend' => $friends,  
         );
         
-        $result = SQLDriverNew::model()->Insert('invite', $data);
+        $result = $sqlDriverNew->Insert('invite', $data);
         return $result ? true : false;
     }
     else {
@@ -109,10 +116,9 @@ function inviteFriends($user, $friends) {
 
 // ТОЧКА ВХОДА
 if(!empty($user_id) && !empty($id)){
-    $user_id = (int)SQLDriverNew::model()->prepareData($user_id);
-    $id      = (int)SQLDriverNew::model()->prepareData($id);
-    
-    $result = inviteFriends($id, $user_id);
+    $user_id    = (int)$sqlDriverNew->prepareData($user_id);
+    $id         = (int)$sqlDriverNew->prepareData($id);
+    $result     = inviteFriends($id, $user_id);
     
     echo json_encode(array(
         'errorCode' => $result ? 'true' : 'false',

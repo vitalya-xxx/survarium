@@ -4,12 +4,11 @@ require("helpers/PushWoosh.php");
 require("helpers/MemcacheClass.php");
 require("helpers/SQLDriverNew.php");
 
-$user_id    = isset($_POST['id']) ? $_POST['id'] : null;
-$room_id    = isset($_POST['room_id']) ? $_POST['room_id'] : null;
-$message    = isset($_POST['message']) ? $_POST['message'] : array();
-$pw2        = new PushWoosh(APPLICATION_CODE, API_ACCESS);
-
-UpdateUserTime::model()->setStateOffOnLineAllUsers(SQLDriverNew::model(), $user_id);
+$user_id        = isset($_POST['id']) ? $_POST['id'] : null;
+$room_id        = isset($_POST['room_id']) ? $_POST['room_id'] : null;
+$message        = isset($_POST['message']) ? $_POST['message'] : array();
+$pw2            = new PushWoosh(APPLICATION_CODE, API_ACCESS);
+$sqlDriverNew   = new SQLDriverNew();
 
 /**
 Запись автора и id сообщения в файл для отслеживания
@@ -20,13 +19,15 @@ UpdateUserTime::model()->setStateOffOnLineAllUsers(SQLDriverNew::model(), $user_
  * @return boolean /
  */
 function writeIdInMemcache($msg_id, $object){
+    global $sqlDriverNew;
+    
     $sql = "
         SELECT user_id, user_id_friend
         FROM rooms
         WHERE id = ".$object['room_id']."
     ";
     
-    $result         = SQLDriverNew::model()->Select($sql);
+    $result         = $sqlDriverNew->Select($sql);
     $recipientId    = ($object['message_author_id'] == $result[0]['user_id']) ? $result[0]['user_id_friend'] : $result[0]['user_id'];
     $key            = $recipientId.'_'.$object['room_id'];
     
@@ -47,9 +48,6 @@ function writeIdInMemcache($msg_id, $object){
 }
 
 if (!empty($user_id) && !empty($room_id) && !empty($message)) {
-    UpdateUserTime::model()->updateTime($user_id, SQLDriverNew::model());
-    UpdateUserTime::model()->setStateOffOnLineAllUsers(SQLDriverNew::model());
-    
     if (!empty($message['message_text']) && !empty($message['message_author_id'])) {
         $date   = date('Y-m-d H:i:s');
         $object = array(
@@ -59,7 +57,7 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
             'room_id'               => $room_id,
         );
 
-        $messageId = SQLDriverNew::model()->Insert('message', $object);
+        $messageId = $sqlDriverNew->Insert('message', $object);
 
         if ($messageId) {
             if ('on' == MEMCACHE_STATE) {
@@ -71,10 +69,10 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
                 'message_date'  => $date,
             ));
 
-            $user_id = SQLDriverNew::model()->prepareData($user_id);
-            $room_id = SQLDriverNew::model()->prepareData($room_id);
+            $user_id = $sqlDriverNew->prepareData($user_id);
+            $room_id = $sqlDriverNew->prepareData($room_id);
             
-            $author     = SQLDriverNew::model()->Select("SELECT user_nickname FROM users WHERE user_id = ".$user_id);
+            $author     = $sqlDriverNew->Select("SELECT user_nickname FROM users WHERE user_id = ".$user_id);
             $authorName = $author[0]['user_nickname'];
 
             $message['message_text'] = $authorName.': '.$message['message_text'];
@@ -88,9 +86,9 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
                 WHERE u.user_id != ".$user_id."
             ";
 
-            $user               = SQLDriverNew::model()->Select($sql);
+            $user               = $sqlDriverNew->Select($sql);
             $deviceTokensArr    = explode(",", $user[0]['device_token']);
-            SQLDriverNew::model()->close();
+            $sqlDriverNew->close();
 
             if (!empty($deviceTokensArr)) {
                 $pushes = array(
