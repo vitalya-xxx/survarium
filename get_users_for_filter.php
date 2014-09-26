@@ -51,8 +51,9 @@ $sqlState_3 = "
     FROM friends AS f, users AS u 
     WHERE f.user_id = ".$user_id."
         AND u.user_id = f.user_id_friend
-    GROUP BY u.user_id
 ";
+
+$groupByUserId = " GROUP BY u.user_id ";
 
 if (!empty($user_id)) {
     if ('' != $filter['user_nickname']) {
@@ -66,7 +67,7 @@ if (!empty($user_id)) {
     
     if ('' == $filter['user_friendState']) {
         if (checkUserFriends($user_id)) {
-            $fullSql    = $sqlState_3.$whereNickName.$order;
+            $fullSql    = $sqlState_3.$whereNickName.$groupByUserId.$order;
             $result     = SQLDriverNew::model()->Select($fullSql);
             addDataToResponce($result, 3);
             
@@ -119,7 +120,7 @@ if (!empty($user_id)) {
                 addDataToResponce($result, 2);
                 break;
             case 3 :
-                $fullSql    = $sqlState_3.$whereNickName.$order.$limitWhere;
+                $fullSql    = $sqlState_3.$whereNickName.$groupByUserId.$order.$limitWhere;
                 $result     = SQLDriverNew::model()->Select($fullSql);
                 addDataToResponce($result, 3);
                 break;
