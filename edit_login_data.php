@@ -7,7 +7,7 @@ $user_id   = isset($_POST['id']) ? $_POST['id'] : null;
 
 $logParams = array(
     'message'    => '', 
-    'method'     => 'edit_login_data', 
+    'method'     => 'EDIT_LOGIN_DATA', 
     'fail'       => true, 
     'mysqlError' => false, 
     'userId'     => $nickname.'/'.$password.'/'.$user_id, 

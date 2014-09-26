@@ -6,7 +6,7 @@ $password = $_POST['user_password'];
 
 $logParams = array(
     'message'    => '', 
-    'method'     => 'login', 
+    'method'     => 'LOGIN', 
     'fail'       => true, 
     'mysqlError' => false, 
     'userId'     => $nickname.'/'.$password, 

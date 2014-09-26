@@ -6,7 +6,7 @@ $sql    = new SQLDriver();
 
 $logParams = array(
     'message'    => '', 
-    'method'     => 'signup', 
+    'method'     => 'SIGNUP', 
     'fail'       => true, 
     'mysqlError' => false, 
     'userId'     => $email, 

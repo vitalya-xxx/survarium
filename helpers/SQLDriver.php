@@ -3,7 +3,7 @@ class SQLDriver {
     
     private $logParams = array(
         'message'    => '', 
-        'method'     => 'class SQLDriver', 
+        'method'     => 'CLASS SQLDRIVER', 
         'fail'       => true, 
         'mysqlError' => true, 
         'userId'     => 'undefined', 

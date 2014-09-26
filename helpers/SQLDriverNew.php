@@ -6,7 +6,7 @@ class SQLDriverNew {
     
     private $logParams = array(
         'message'    => '', 
-        'method'     => 'class SQLDriverNew', 
+        'method'     => 'CLASS SQLDRIVER NEW', 
         'fail'       => true, 
         'mysqlError' => true, 
         'userId'     => 'undefined', 

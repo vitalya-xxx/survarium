@@ -10,6 +10,14 @@ $message        = isset($_POST['message']) ? $_POST['message'] : array();
 $pw2            = new PushWoosh(APPLICATION_CODE, API_ACCESS);
 $sqlDriverNew   = new SQLDriverNew();
 
+$logParams = array(
+    'message'    => '', 
+    'method'     => 'SEND_MESSAGE', 
+    'fail'       => true, 
+    'mysqlError' => false, 
+    'userId'     => 'from: '.$user_id.'/room: '.$room_id, 
+);
+
 /**
 Запись автора и id сообщения в файл для отслеживания
  * 
@@ -61,13 +69,11 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
 
         if ($messageId) {
             if ('on' == MEMCACHE_STATE) {
+                $logParams['message'] = 'write messageId In Memcache';
+                $logParams['fail']    = false;
+                writeInErroLog($logParams);
                 writeIdInMemcache($messageId, $object);
             }
-            
-            echo json_encode(array(
-                'message_id'    => $messageId,
-                'message_date'  => $date,
-            ));
 
             $user_id = $sqlDriverNew->prepareData($user_id);
             $room_id = $sqlDriverNew->prepareData($room_id);
@@ -98,16 +104,31 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
                     ),
                 );
                 $response = $pw2->createMessage($pushes);
+                
+                $logParams['message']   = 'send PushWoosh'.json_encode($response);
+                $logParams['fail']      = false;
+                writeInErroLog($logParams);
             }
+            
+            echo json_encode(array(
+                'message_id'    => $messageId,
+                'message_date'  => $date,
+            ));
         }
         else {
-           sendError(5); 
+            $logParams['message'] = 'sendError(5)';
+            writeInErroLog($logParams);
+            sendError(5); 
         }
     }
     else {
+        $logParams['message'] = 'sendError(6)';
+        writeInErroLog($logParams);
         sendError(6);
     }
 }
 else {
+    $logParams['message'] = 'sendError(6)';
+    writeInErroLog($logParams);
     sendError(6);
 }
