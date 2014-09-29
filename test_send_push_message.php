@@ -10,10 +10,16 @@ if (!empty($user_token)) {
     $message = !empty($message) ? $message : 'Test push message.';
     $message = 'Test author: '.$message;
     
+    $jsonData   = array(
+        'room_id' => 1111,
+        'user_id' => 1111,
+    );
+    
     $pushes = array(
         array(
             'content' => $message,
             'devices' => array($user_token),
+            'data'    => $jsonData,
         ),
     );
     

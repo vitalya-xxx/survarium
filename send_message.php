@@ -97,16 +97,26 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
             $sqlDriverNew->close();
 
             if (!empty($deviceTokensArr)) {
-                $pushes = array(
+                $jsonData   = json_encode(array(
+                    'room_id' => $room_id,
+                    'user_id' => $user_id,
+                ));
+                
+                $pushes     = array(
                     array(
-                        'content' => $message['message_text'],
-                        'devices' => $deviceTokensArr,
+                        'content'   => $message['message_text'],
+                        'devices'   => $deviceTokensArr,
+                        'data'      => array('custom' => $jsonData),
                     ),
                 );
+                
+                $logParams['message']   = 'pushes'.json_encode($pushes);
+                $logParams['fail']      = false;
+                writeInErroLog($logParams);
+                
                 $response = $pw2->createMessage($pushes);
                 
-                $logParams['message']   = 'send PushWoosh'.json_encode($response);
-                $logParams['fail']      = false;
+                $logParams['message'] = 'send PushWoosh'.json_encode($response);
                 writeInErroLog($logParams);
             }
             
