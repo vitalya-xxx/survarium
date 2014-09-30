@@ -9,7 +9,7 @@ $sqlDriver      = new SQLDriver();
 $logParams = array(
     'message'    => '', 
     'method'     => 'SEND_TOKEN', 
-    'fail'       => true, 
+    'fail'       => false, 
     'mysqlError' => false, 
     'userId'     => $id, 
 );
