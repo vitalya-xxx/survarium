@@ -17,13 +17,19 @@ $logParams = array(
 if (!empty($user_token)) {
     $message = !empty($message) ? $message : 'Test push message.';
     $message = 'Test author: '.$message;
+    
+    $jsonData = array(
+        'type'      => 1,
+        'user_id'   => 777,
+        'room_id'   => 888,
+    );
 
     $pushes = array(
         array(
             'content' => $message,
             'devices' => array($user_token),
             'data'    => array(
-                'custom' => "{'type':1,'user_id':777,'room_id':888}"
+                'custom' => $jsonData
             ),
         ),
     );

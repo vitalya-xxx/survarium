@@ -5,6 +5,15 @@ $id             = (isset($_POST['id'])) ? (int)$_POST['id'] : null;
 $user_token     = (isset($_POST['user_token'])) ? trim($_POST['user_token']) : null;
 $user_token_old = (isset($_POST['user_token_old'])) ? trim($_POST['user_token_old']) : null;
 $sqlDriver      = new SQLDriver();
+
+$logParams = array(
+    'message'    => '', 
+    'method'     => 'SEND_TOKEN', 
+    'fail'       => true, 
+    'mysqlError' => false, 
+    'userId'     => $id, 
+);
+
 UpdateUserTime::model()->setStateOffOnLineAllUsers($sqlDriver, $id);
 
 if (!empty($id) && (!empty($user_token) || !empty($user_token_old))) {
@@ -18,21 +27,33 @@ if (!empty($id) && (!empty($user_token) || !empty($user_token_old))) {
 
         // надо заменить токен
         if (!empty($user_token) && !empty($user_token_old)) {
+            $logParams['message'] = 'replacement '.$user_token_old.' on '.$user_token;
+            writeInErroLog($logParams);
+            
             $newTokens = array();
             
-            foreach ($deviceTokensArr as $token) {
-                if ($token == $user_token_old) {
-                    $newTokens[] = $user_token;
+            if (!empty($deviceTokensArr)) {
+                foreach ($deviceTokensArr as $token) {
+                    if ($token == $user_token_old) {
+                        $newTokens[] = $user_token;
+                    }
+                    else {
+                        $newTokens[] = $token;
+                    }
                 }
-                else {
-                    $newTokens[] = $token;
-                }
+                $deviceTokensArr = array();
+                $deviceTokensArr = $newTokens;
             }
-            $deviceTokensArr = array();
-            $deviceTokensArr = $newTokens;
+            else {
+                $deviceTokensArr[] = $user_token;
+            }
         }
         // добавить новый
         else if (!empty($user_token) && empty($user_token_old)) {
+            
+            $logParams['message'] = 'add new token '.$user_token;
+            writeInErroLog($logParams);
+            
             $tokenExists = false;
             foreach ($deviceTokensArr as $token) {
                 if ($token == $user_token) {
@@ -45,6 +66,10 @@ if (!empty($id) && (!empty($user_token) || !empty($user_token_old))) {
         }
         // удалить токен
         else if (empty($user_token) && !empty($user_token_old)) {
+            
+            $logParams['message'] = 'remove token '.$user_token;
+            writeInErroLog($logParams);
+            
             $newTokens = array();
             
             foreach ($deviceTokensArr as $token) {

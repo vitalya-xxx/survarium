@@ -67,12 +67,17 @@ function sendPushInvite($userId, $friendId){
     $deviceTokensArr = explode(",", $user[0]['device_token']);
 
     if (!empty($deviceTokensArr)) {
+        $jsonData = array(
+            'type'      => 2,
+            'user_id'   => $userId,
+        );
+        
         $pushes = array(
             array(
                 'content' => $message,
                 'devices' => $deviceTokensArr,
                 'data'    => array(
-                    'custom' => "{'type':2,'user_id':".$user_id."}"
+                    'custom' => $jsonData
                 ),
             ),
         );

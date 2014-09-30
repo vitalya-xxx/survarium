@@ -97,12 +97,18 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
             $sqlDriverNew->close();
 
             if (!empty($deviceTokensArr)) {
+                $jsonData = array(
+                    'type'      => 1,
+                    'user_id'   => $user_id,
+                    'room_id'   => $room_id,
+                );
+                
                 $pushes = array(
                     array(
                         'content' => $message['message_text'],
                         'devices' => $deviceTokensArr,
                         'data'    => array(
-                            'custom' => "{'type':1,'user_id':".$user_id.",'room_id':".$room_id."}"
+                            'custom' => $jsonData
                         ),
                     ),
                 );
