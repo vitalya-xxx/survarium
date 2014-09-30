@@ -2,8 +2,8 @@
 require("config.inc.php");
 
 $id             = (isset($_POST['id'])) ? (int)$_POST['id'] : null;
-$user_token     = (isset($_POST['user_token'])) ? $_POST['user_token'] : null;
-$user_token_old = (isset($_POST['user_token_old'])) ? $_POST['user_token_old'] : null;
+$user_token     = (isset($_POST['user_token'])) ? trim($_POST['user_token']) : null;
+$user_token_old = (isset($_POST['user_token_old'])) ? trim($_POST['user_token_old']) : null;
 $sqlDriver      = new SQLDriver();
 UpdateUserTime::model()->setStateOffOnLineAllUsers($sqlDriver, $id);
 

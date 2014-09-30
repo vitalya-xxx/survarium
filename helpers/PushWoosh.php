@@ -2,6 +2,14 @@
 class PushWoosh
 {
     protected $config;
+    
+    private $logParams = array(
+        'message'    => '', 
+        'method'     => 'CLASS PUSH WOOSH', 
+        'fail'       => false, 
+        'mysqlError' => false, 
+        'userId'     => 'undefined', 
+    );
 
     public function __construct($appId, $auth){
         $config = array(
@@ -17,6 +25,9 @@ class PushWoosh
         $request    = json_encode(array('request' => $data));
         $ch         = curl_init($url);
 
+        $this->logParams['message'] = $request;
+        writeInErroLog($this->logParams);
+        
         curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt ($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
@@ -56,6 +67,10 @@ class PushWoosh
 
             if (array_key_exists('devices', $push)) {
                 $pushData['devices'] = $push['devices'];
+            }
+            
+            if (array_key_exists('data', $push)) {
+                $pushData['data'] = $push['data'];
             }
 
             if ($link) {

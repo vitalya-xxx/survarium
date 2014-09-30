@@ -71,6 +71,9 @@ function sendPushInvite($userId, $friendId){
             array(
                 'content' => $message,
                 'devices' => $deviceTokensArr,
+                'data'    => array(
+                    'custom' => "{'type':2,'user_id':".$user_id."}"
+                ),
             ),
         );
 
