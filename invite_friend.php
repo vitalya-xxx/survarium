@@ -74,11 +74,10 @@ function sendPushInvite($userId, $friendId){
         
         $pushes = array(
             array(
-                'content' => $message,
-                'devices' => $deviceTokensArr,
-                'data'    => array(
-                    'custom' => $jsonData
-                ),
+                'content'           => $message,
+                'devices'           => $deviceTokensArr,
+                'ios_root_params'   => array('aps' => array('content-available' => '1')),
+                'data'              => array('custom' => $jsonData),
             ),
         );
 

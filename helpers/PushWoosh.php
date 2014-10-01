@@ -72,6 +72,10 @@ class PushWoosh
             if (array_key_exists('data', $push)) {
                 $pushData['data'] = $push['data'];
             }
+            
+            if (array_key_exists('ios_root_params', $push)) {
+                $pushData['ios_root_params'] = $push['ios_root_params'];
+            }
 
             if ($link) {
                 $pushData['link'] = $link;

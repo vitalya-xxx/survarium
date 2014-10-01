@@ -105,11 +105,10 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
                 
                 $pushes = array(
                     array(
-                        'content' => $message['message_text'],
-                        'devices' => $deviceTokensArr,
-                        'data'    => array(
-                            'custom' => $jsonData
-                        ),
+                        'content'           => $message['message_text'],
+                        'devices'           => $deviceTokensArr,
+                        'ios_root_params'   => array('aps' => array('content-available' => '1')),
+                        'data'              => array('custom' => $jsonData),
                     ),
                 );
                 

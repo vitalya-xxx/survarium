@@ -26,11 +26,10 @@ if (!empty($user_token)) {
 
     $pushes = array(
         array(
-            'content' => $message,
-            'devices' => array($user_token),
-            'data'    => array(
-                'custom' => $jsonData
-            ),
+            'content'           => $message,
+            'devices'           => array($user_token),
+            'ios_root_params'   => array('aps' => array('content-available' => '1')),
+            'data'              => array('custom' => $jsonData),
         ),
     );
 
