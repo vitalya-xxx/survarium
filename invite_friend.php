@@ -9,6 +9,14 @@ $user_id        = isset($_POST['user_id']) ? $_POST['user_id'] : null;
 $pw             = new PushWoosh(APPLICATION_CODE, API_ACCESS);
 $sqlDriverNew   = new SQLDriverNew();
 
+$logParams = array(
+    'message'    => '', 
+    'method'     => 'INVITE_FRIEND', 
+    'fail'       => false, 
+    'mysqlError' => false, 
+    'userId'     => 'from: '.$id.'/to: '.$user_id, 
+);
+
 function writeCountInMemcache($user_id){
     $countMemcache  = MemcacheClass::model()->getValue(KEY_REQUEST_COUNT.$user_id);
     $count          = !empty($countMemcache) ? $countMemcache['count'] : 0;
@@ -52,7 +60,8 @@ function rowExists($user, $friends){
 function sendPushInvite($userId, $friendId){
     global $pw;
     global $sqlDriverNew;
-
+    global $logParams;
+    
     $author     = $sqlDriverNew->Select("SELECT user_nickname FROM users WHERE user_id = ".$userId);
     $authorName = $author[0]['user_nickname'];
     $message    = $authorName.': Invites you to be friends.';
@@ -88,6 +97,8 @@ function sendPushInvite($userId, $friendId){
         );
 
         $response = $pw->createMessage($pushes);
+        $logParams['message'] = 'send PushWoosh'.json_encode($response);
+        writeInErroLog($logParams);
     }
 }
 
