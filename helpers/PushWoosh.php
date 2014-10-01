@@ -59,11 +59,12 @@ class PushWoosh
         );
 
         foreach ($pushes as $push) {
-            $pushData = array(
-                'send_date'     => $sendDate,
-                'content'       => $push['content'],
-                'ios_badges'    => $ios_badges
-            );
+            $pushData = array('send_date'=> $sendDate);
+            
+            if (!array_key_exists('silentPush', $push)) {
+                $pushData['content']    = $push['content'];
+                $pushData['ios_badges'] = $ios_badges;
+            }
 
             if (array_key_exists('devices', $push)) {
                 $pushData['devices'] = $push['devices'];
@@ -71,6 +72,10 @@ class PushWoosh
             
             if (array_key_exists('data', $push)) {
                 $pushData['data'] = $push['data'];
+            }
+            
+            if (array_key_exists('ios_sound', $push)) {
+                $pushData['ios_sound'] = $push['ios_sound'];
             }
             
             if (array_key_exists('ios_root_params', $push)) {

@@ -71,13 +71,19 @@ function sendPushInvite($userId, $friendId){
             'type'      => 2,
             'user_id'   => $userId,
         );
-        
+
         $pushes = array(
             array(
-                'content'           => $message,
+                'silentPush'        => true,
                 'devices'           => $deviceTokensArr,
                 'ios_root_params'   => array('aps' => array('content-available' => '1')),
+                'ios_sound'         => '',
                 'data'              => array('custom' => $jsonData),
+            ),
+            array(
+                'content' => $message,
+                'devices' => $deviceTokensArr,
+                'data'    => array('custom' => $jsonData),
             ),
         );
 
