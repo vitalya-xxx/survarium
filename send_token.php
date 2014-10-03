@@ -93,17 +93,28 @@ if (!empty($id) && (!empty($user_token) || !empty($user_token_old))) {
         $result = $sqlDriver->Update('users', $object, 'user_id = '.$id);
 
         if (false !== $result) {
+            $logParams['message'] = 'DB UPDATED '.json_encode($object);
+            writeInErroLog($logParams);
             echo json_encode(array('result'=>'ok'));
         }
         else {
+            $logParams['message']   = 'sendError(5)';
+            $logParams['fail']      = true;
+            writeInErroLog($logParams);
             sendError(5);
         }
     }
     else {
+        $logParams['message']   = 'sendError(7)';
+        $logParams['fail']      = true;
+        writeInErroLog($logParams);
         sendError(7);
     }
 }
 else {
+    $logParams['message']   = 'sendError(6)';
+    $logParams['fail']      = true;
+    writeInErroLog($logParams);
     sendError(6);
 }
 

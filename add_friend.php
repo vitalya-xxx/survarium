@@ -42,6 +42,7 @@ if($_POST["id"]&&$_POST["user_id"]){
         
         if ('on' == MEMCACHE_STATE) {
             writeCountInMemcache($id);
+            writeCountInMemcache($user_id);
         }
     }
     else {
