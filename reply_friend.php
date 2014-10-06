@@ -12,36 +12,68 @@ $logParams = array(
 
 function writeCountInMemcache($user_id){
     global $logParams;
-    $logParams['message'] = 'WRITE_IN_MEM / MEM_KEY - '.KEY_REQUEST_COUNT.$user_id;
+    
     $countMemcache  = MemcacheClass::model()->getValue(KEY_REQUEST_COUNT.$user_id);
-    $logParams['message'] .= ' OLD_VAL - '.$countMemcache['count'];
     $count          = !empty($countMemcache) ? ($countMemcache['count'] - 1) : 0;
     $result         = (0 < $count) ? $count : 0;
-    $logParams['message'] .= ' NEW_VAL - '.$result;
     MemcacheClass::model()->setValue(KEY_REQUEST_COUNT.$user_id, array('count' => $result));
+    
+    $logParams['message'] = '[3/4] WRITE_IN_MEM / MEM_KEY - '.KEY_REQUEST_COUNT.$user_id;
+    $logParams['message'] .= '[4/5] OLD_VAL - '.$countMemcache['count'];
+    $logParams['message'] .= '[5/6] NEW_VAL - '.$result;
     writeInErroLog($logParams);
+    
     return true;
 }
 
 function addFriends( $user,$friends ) {
     global $logParams;
     
-    $sql = mysql_query("INSERT INTO `friends` (`user_id`, `user_id_friend`) 
-								VALUES ('".$user."','".$friends."')");
-		$sql = mysql_query("INSERT INTO `friends` (`user_id`, `user_id_friend`) 
-								VALUES ('".$friends."','".$user."')");		
-		if($sql){$response = array ('errorCode' => 'true');} else {$response = array ('errorCode' => 'false');}	
-        
-        $logParams['message'] .= ' addFriends '.json_encode($response);
-        writeInErroLog($logParams);
-		return $response;
+    $sql1 = mysql_query("INSERT INTO `friends` (`user_id`, `user_id_friend`) VALUES ('".$user."','".$friends."')");
+    $sql2 = mysql_query("INSERT INTO `friends` (`user_id`, `user_id_friend`) VALUES ('".$friends."','".$user."')");	
+    
+    $response['errorCode'] = ($sql1 && $sql2) ? 'true' : 'false'; 	
+
+    $logParams['message'] .= '[2] addFriends '.json_encode($response);
+    writeInErroLog($logParams);
+    return $response;
 }
-function inviteFriendsDelete( $user,$friends ) {
+
+function inviteFriendsDelete($user, $friends, $addFriend = false) {
     global $logParams;
 	$sql = mysql_query("DELETE FROM invite WHERE user_id = '$friends' AND user_id_friend = '$user' ");
-    $logParams['message'] .= ' inviteFriendsDelete ';
+    
+    $logParams['message'] = '[2/3] inviteFriendsDelete ';
     writeInErroLog($logParams);
-		
+    
+    if ($addFriend) {
+        $sql = "
+            SELECT COUNT(id) AS count
+            FROM invite
+            WHERE user_id = ".$user." 
+                AND user_id_friend = ".$friends."
+        ";
+        
+        $result = mysql_query($sql);
+        
+        if ($result) {
+            $result = mysql_fetch_assoc($result);
+        }
+        
+        if (0 < (int)$result['count']) {
+            $sql = "
+                DELETE 
+                FROM invite 
+                WHERE user_id = ".$user."
+                    AND user_id_friend = ".$friends." 
+            ";
+            $result = mysql_query($sql);
+            
+            if ('on' == MEMCACHE_STATE) {
+                writeCountInMemcache((int)$friends);
+            }
+        }
+    }
 }
 
 if($_POST["id"]&&$_POST["user_id"]){
@@ -51,21 +83,28 @@ if($_POST["id"]&&$_POST["user_id"]){
     UpdateUserTime::model()->setStateOffOnLineAllUsers($sqlDriver, $_POST["id"]);
     
     if($_POST["reply"] == 1){
-        $logParams['message'] = 'Reaply - 1 / ';
+        $logParams['message'] = '[1] Reaply - 1 / ';
         $result = addFriends($_POST["id"],$_POST["user_id"]);
         if ($result) {
-            inviteFriendsDelete($_POST["id"],$_POST["user_id"]);
+            inviteFriendsDelete($_POST["id"], $_POST["user_id"], true);
+            if ('on' == MEMCACHE_STATE) {
+                writeCountInMemcache((int)$_POST["id"]);
+            }
+            sendSuccess();
         }
-        echo json_encode(array('addFriends'=>'ok'));
+        else {
+            sendError(5);
+        }
     } 
     else {
-        $logParams['message'] = 'Reaply - 0 / ';
+        $logParams['message'] = '[1] Reaply - 0 / ';
+        writeInErroLog($logParams);
+        
         inviteFriendsDelete($_POST["id"],$_POST["user_id"]);
-        echo json_encode(array('inviteFriendsDelete'=>'ok'));
-    }
-    
-    if ('on' == MEMCACHE_STATE) {
-        writeCountInMemcache((int)$_POST["id"]);
+        if ('on' == MEMCACHE_STATE) {
+            writeCountInMemcache((int)$_POST["id"]);
+        }
+        sendSuccess();
     }
 }
 else {
