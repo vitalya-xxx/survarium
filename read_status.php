@@ -38,7 +38,9 @@ if (!empty($message_id)) {
     if ('on' == MEMCACHE_STATE) {
         writeInMemcache($user_id, $readMsg);
     }
+    sendSuccess();
 }
-
-echo json_encode(array('result' => 'ok'));
+else {
+    sendError(6);
+}
 

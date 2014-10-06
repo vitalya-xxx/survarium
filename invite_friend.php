@@ -18,9 +18,14 @@ $logParams = array(
 );
 
 function writeCountInMemcache($user_id){
+    global $logParams;
+    
     $countMemcache  = MemcacheClass::model()->getValue(KEY_REQUEST_COUNT.$user_id);
     $count          = !empty($countMemcache) ? $countMemcache['count'] : 0;
     MemcacheClass::model()->setValue(KEY_REQUEST_COUNT.$user_id, array('count' => $count + 1));
+    
+    $logParams['message'] = '[2] WRITE IN THE MEMCACHE / MEM_KEY - '.KEY_REQUEST_COUNT.$user_id.' / OLD_VAL - '.$count.' / NEW_VAL - '.($count + 1);
+    writeInErroLog($logParams);
     
     return true;
 }
@@ -97,7 +102,7 @@ function sendPushInvite($userId, $friendId){
         );
 
         $response = $pw->createMessage($pushes);
-        $logParams['message'] = 'send PushWoosh'.json_encode($response);
+        $logParams['message'] = '[3] send PushWoosh'.json_encode($response);
         writeInErroLog($logParams);
     }
 }
@@ -110,6 +115,7 @@ function sendPushInvite($userId, $friendId){
  */
 function inviteFriends($user, $friends) {
     global $sqlDriverNew;
+    global $logParams;
     
     if (false == rowExists($user, $friends)) {
         $data = array(
@@ -118,9 +124,16 @@ function inviteFriends($user, $friends) {
         );
         
         $result = $sqlDriverNew->Insert('invite', $data);
+        
+        $logParams['message'] = '[1] ADD ROW IN DB - '.($result ? true : false);
+        writeInErroLog($logParams);
+        
         return $result ? true : false;
     }
     else {
+        $logParams['message'] = '[1] ROW EXISTS IN DB';
+        writeInErroLog($logParams);
+        
         return true;
     }
 }
@@ -134,16 +147,15 @@ if(!empty($user_id) && !empty($id)){
     UpdateUserTime::model()->updateTime($id, SQLDriverNew::model());
     UpdateUserTime::model()->setStateOffOnLineAllUsers(SQLDriverNew::model());
     
-    
-    echo json_encode(array(
-        'errorCode' => $result ? 'true' : 'false',
-    ));
-    
     if ($result) {
         if ('on' == MEMCACHE_STATE) {
             writeCountInMemcache($user_id);
         }
         sendPushInvite($id, $user_id);
+        sendSuccess();
+    }
+    else {
+        sendError(5);
     }
 }
 else {

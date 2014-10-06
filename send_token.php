@@ -95,7 +95,7 @@ if (!empty($id) && (!empty($user_token) || !empty($user_token_old))) {
         if (false !== $result) {
             $logParams['message'] = 'DB UPDATED '.json_encode($object);
             writeInErroLog($logParams);
-            echo json_encode(array('result'=>'ok'));
+            sendSuccess();
         }
         else {
             $logParams['message']   = 'sendError(5)';

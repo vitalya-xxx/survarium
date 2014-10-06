@@ -52,6 +52,13 @@ function sendError($errorCode){
     die();
 }
 
+function sendSuccess(){
+    echo json_encode(array(
+        'result' => 1,
+    ));
+    die();
+}
+
 function writeInErroLog($params){
     $date       = date('d.m.Y H:i:s');
     $type       = $params['fail'] ? 'ERROR' : 'SUCCESS';

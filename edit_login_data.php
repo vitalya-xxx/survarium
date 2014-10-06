@@ -36,7 +36,7 @@ if (!empty($nickname) && !empty($password) && !empty($user_id)) {
                 $logParams['message']   = 'user to activate your account';
                 $logParams['fail']      = false;
                 writeInErroLog($logParams); 
-                echo json_encode(array('result' => 'ok'));
+                sendSuccess();
             }
             else {
                 $logParams['message'] = 'sendError(5)';
@@ -61,7 +61,7 @@ if (!empty($nickname) && !empty($password) && !empty($user_id)) {
             $logParams['message']   = 'user to activate your account';
             $logParams['fail']      = false;
             writeInErroLog($logParams); 
-            echo json_encode(array('result' => 'ok'));
+            sendSuccess();
         }
         else {
             $logParams['message'] = 'sendError(5)';
