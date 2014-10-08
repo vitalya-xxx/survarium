@@ -9,7 +9,7 @@ if (!empty($news_id)) {
     $row = mysql_fetch_assoc($res);   
 
     if ($res) {
-        $response['news_content'] = htmlspecialchars($row['news_content']);
+        $response['news_content'] = $row['news_content'];
         $response['news_url'] =  $row['news_url'];
     } 
 

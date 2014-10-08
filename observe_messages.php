@@ -63,7 +63,7 @@ function getLastMessageForRoom(){
         'room_id'           => (int)$room_id,
         'message_author_id' => (int)$result[0]['message_author_id'],
         'message_text'      => $result[0]['message_text'],
-        'message_date'      => $result[0]['message_date'],
+        'message_date'      => strtotime($result[0]['message_date']),
         'read'              => $result[0]['read'],
     );
 
@@ -130,7 +130,7 @@ if (!empty($user_id) && !empty($room_id)) {
     $response['room_messages'][] = array(
         'message_id'        => (int)$result['message_id'],
         'message_text'      => $result['message_text'],
-        'message_date'      => $result['message_date'],
+        'message_date'      => strtotime($result['message_date']),
         'message_author_id' => (int)$result['message_author_id'],
         'message_is_read'   => (int)$result['read'],
     );

@@ -21,7 +21,7 @@ function getLastMessageForRooms($room_id){
         $msg        = array(
             'message_id'        => (int)$messages['message_id'],
             'message_text'      => $messages['message_text'],
-            'message_date'      => $messages['message_date'],
+            'message_date'      => strtotime($messages['message_date']),
             'message_author_id' => (int)$messages['message_author_id'],
             'message_is_read'   => (int)$messages['read'],
         );
@@ -129,7 +129,7 @@ function getRoomMessages($room_id){
             $messages[] = array(
                 'message_id'        => (int)$msg['message_id'], 
                 'message_text'      => $msg['message_text'], 
-                'message_date'      => $msg['message_date'], 
+                'message_date'      => strtotime($msg['message_date']), 
                 'message_author_id' => (int)$msg['message_author_id'],
                 'message_is_read'   => (int)$msg['read'],
             );

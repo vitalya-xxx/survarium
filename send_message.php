@@ -4,6 +4,8 @@ require("helpers/PushWoosh.php");
 require("helpers/MemcacheClass.php");
 require("helpers/SQLDriverNew.php");
 
+session_write_close();
+
 $user_id        = isset($_POST['id']) ? $_POST['id'] : null;
 $room_id        = isset($_POST['room_id']) ? $_POST['room_id'] : null;
 $message        = isset($_POST['message']) ? $_POST['message'] : array();
@@ -44,7 +46,7 @@ function writeIdInMemcache($msg_id, $object){
         'room_id'           => (int)$object['room_id'],
         'message_author_id' => (int)$object['message_author_id'],
         'message_text'      => $object['message_text'],
-        'message_date'      => $object['message_date'],
+        'message_date'      => strtotime($object['message_date']),
         'read'              => 0,
     );
 
@@ -127,7 +129,7 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
             
             echo json_encode(array(
                 'message_id'    => $messageId,
-                'message_date'  => $date,
+                'message_date'  => strtotime($date),
             ));
         }
         else {
