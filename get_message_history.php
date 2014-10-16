@@ -57,7 +57,7 @@ if (!empty($user_id)) {
             $response['room_messages'][] = array(
                 'message_id'        => (int)$one['message_id'],
                 'message_text'      => $one['message_text'],
-                'message_date'      => strtotime($one['message_date']),
+                'message_date'      => $one['message_date'],
                 'message_author_id' => (int)$one['message_author_id'],
                 'message_is_read'   => (int)$one['read'],
             ); 

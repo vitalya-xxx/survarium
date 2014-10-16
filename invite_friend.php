@@ -128,6 +128,10 @@ function inviteFriends($user, $friends) {
         $logParams['message'] = '[1] ADD ROW IN DB - '.($result ? true : false);
         writeInErroLog($logParams);
         
+        if ('on' == MEMCACHE_STATE) {
+            writeCountInMemcache($user_id);
+        }
+        
         return $result ? true : false;
     }
     else {
@@ -148,9 +152,6 @@ if(!empty($user_id) && !empty($id)){
     UpdateUserTime::model()->setStateOffOnLineAllUsers(SQLDriverNew::model());
     
     if ($result) {
-        if ('on' == MEMCACHE_STATE) {
-            writeCountInMemcache($user_id);
-        }
         sendPushInvite($id, $user_id);
         sendSuccess();
     }

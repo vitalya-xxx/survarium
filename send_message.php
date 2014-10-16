@@ -46,7 +46,7 @@ function writeIdInMemcache($msg_id, $object){
         'room_id'           => (int)$object['room_id'],
         'message_author_id' => (int)$object['message_author_id'],
         'message_text'      => $object['message_text'],
-        'message_date'      => strtotime($object['message_date']),
+        'message_date'      => $object['message_date'],
         'read'              => 0,
     );
 
@@ -58,11 +58,10 @@ function writeIdInMemcache($msg_id, $object){
 }
 
 if (!empty($user_id) && !empty($room_id) && !empty($message)) {
-    if (!empty($message['message_text']) && !empty($message['message_author_id'])) {
-        $date   = date('Y-m-d H:i:s');
+    if (!empty($message['message_text']) && !empty($message['message_author_id']) && !empty($message['message_date'])) {
         $object = array(
             'message_text'          => $message['message_text'],
-            'message_date'          => $date,
+            'message_date'          => $message['message_date'],
             'message_author_id'     => $message['message_author_id'],
             'room_id'               => $room_id,
         );
@@ -127,10 +126,16 @@ if (!empty($user_id) && !empty($room_id) && !empty($message)) {
                 writeInErroLog($logParams);
             }
             
-            echo json_encode(array(
+            $resultData = array(
                 'message_id'    => $messageId,
-                'message_date'  => strtotime($date),
-            ));
+                'message_date'  => $date,
+            );
+            
+            $logParams['message'] = json_encode($resultData);
+            $logParams['fail']    = false;
+            writeInErroLog($logParams);
+            
+            echo json_encode($resultData);
         }
         else {
             $logParams['message'] = 'sendError(5)';

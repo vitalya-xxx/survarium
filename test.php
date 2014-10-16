@@ -200,6 +200,9 @@
         message:{message_author_id}:<br /> 
         <input type="text" name="message[message_author_id]" value="" /> 
         <br />
+        message:{message_date}:<br /> 
+        <input type="text" name="message[message_date]" value="<?php echo time();?>" /> 
+        <br />
         <input class="button" type="submit" value="Go" /> 
         </form> 
     </div>
